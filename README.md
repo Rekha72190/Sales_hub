@@ -83,6 +83,9 @@ CREATE TABLE IF NOT EXISTS payment_splits (
     sale_id INT NOT NULL,
     payment_date DATE NOT NULL,
     amount_paid DECIMAL(10, 2) NOT NULL,
+    payment_method VARCHAR(50) NOT NULL,
+    FOREIGN KEY (sale_id) REFERENCES customer_sales(sale_id) ON DELETE CASCADE
+);
 
 📂 Project Structure
 ├── app.py              # Main Streamlit UI layout, page routes, forms & session state
@@ -130,6 +133,4 @@ mysql-connector-python>=8.0.0
 
 
 
-    payment_method VARCHAR(50) NOT NULL,
-    FOREIGN KEY (sale_id) REFERENCES customer_sales(sale_id) ON DELETE CASCADE
-);
+   
