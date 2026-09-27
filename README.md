@@ -44,49 +44,72 @@ An end-to-end multi-tenant Sales Management and Financial Tracking application b
 Ensure MySQL is installed and running locally on port `3306`. Execute the following SQL scripts to initialize the database schema:
 
 ```sql
-CREATE DATABASE IF NOT EXISTS sales_hub_db;
+-- 1. Completely delete the database and all its tables, constraints, and triggers
+DROP DATABASE IF EXISTS sales_hub_db;
+
+-- 2. Create a clean, empty database
+CREATE DATABASE sales_hub_db;
+
+-- 3. Switch to the newly created database
 USE sales_hub_db;
 
 -- 1. Branches Table
-CREATE TABLE IF NOT EXISTS branches (
+CREATE TABLE branches (
     branch_id INT AUTO_INCREMENT PRIMARY KEY,
-    branch_name VARCHAR(100) NOT NULL,
-    branch_admin_name VARCHAR(100)
+    branch_name VARCHAR(100) NOT NULL UNIQUE,
+	branch_admin_name VARCHAR(100) NOT NULL
 );
 
 -- 2. Users Table
-CREATE TABLE IF NOT EXISTS users (
+CREATE TABLE users (
     user_id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
-    role ENUM('Super Admin', 'Branch Admin') NOT NULL,
-    branch_id INT,
-    FOREIGN KEY (branch_id) REFERENCES branches(branch_id) ON DELETE SET NULL
+    email VARCHAR(255) UNIQue,
+    role ENUM('Super Admin', 'Admin') NOT NULL,
+    branch_id INT DEFAULT NULL,
+    FOREIGN KEY (branch_id) REFERENCES branches(branch_id) 
+        ON DELETE RESTRICT 
+        ON UPDATE CASCADE
 );
 
--- 3. Customer Sales Table
-CREATE TABLE IF NOT EXISTS customer_sales (
+-- 3. Customer Sales Table (Parent Table)
+CREATE TABLE customer_sales (
     sale_id INT AUTO_INCREMENT PRIMARY KEY,
     branch_id INT NOT NULL,
     date DATE NOT NULL,
     name VARCHAR(100) NOT NULL,
     mobile_number VARCHAR(15),
-    product_name VARCHAR(100) NOT NULL,
-    gross_sales DECIMAL(10, 2) NOT NULL,
-    status VARCHAR(20) NOT NULL DEFAULT 'Open',
-    FOREIGN KEY (branch_id) REFERENCES branches(branch_id) ON DELETE CASCADE
+    product_name VARCHAR(30),
+    gross_sales DECIMAL(12,2) NOT NULL CHECK (gross_sales >= 0),
+    received_amount DECIMAL(12,2) DEFAULT 0.00 CHECK (received_amount >= 0),
+    
+    -- STORED Generated Column for automatic calculation
+    pending_amount DECIMAL(12,2) GENERATED ALWAYS AS (gross_sales - received_amount) STORED,
+    
+    -- Status Enum: Defaults to 'Open' when a sale is created
+    status ENUM('Open', 'Close') DEFAULT 'Open' NOT NULL,
+    
+    -- Prevents overpayment at the database level
+    CONSTRAINT chk_no_overpayment CHECK (received_amount <= gross_sales),
+    
+    FOREIGN KEY (branch_id) REFERENCES branches(branch_id) 
+        ON DELETE RESTRICT 
+        ON UPDATE CASCADE
 );
 
--- 4. Payment Splits Table
-CREATE TABLE IF NOT EXISTS payment_splits (
+-- 4. Payment Splits Table (Child Table)
+CREATE TABLE payment_splits (
     payment_id INT AUTO_INCREMENT PRIMARY KEY,
     sale_id INT NOT NULL,
     payment_date DATE NOT NULL,
-    amount_paid DECIMAL(10, 2) NOT NULL,
-    payment_method VARCHAR(50) NOT NULL,
-    FOREIGN KEY (sale_id) REFERENCES customer_sales(sale_id) ON DELETE CASCADE
+    amount_paid DECIMAL(12,2) NOT NULL CHECK (amount_paid > 0),
+    payment_method ENUM('Cash', 'UPI', 'Card') NOT NULL,
+    
+    FOREIGN KEY (sale_id) REFERENCES customer_sales(sale_id) 
+        ON DELETE RESTRICT 
+        ON UPDATE CASCADE
 );
-
 📂 Project Structure
 ├── app.py              # Main Streamlit UI layout, page routes, forms & session state
 ├── db_engine.py        # Connection pooling, CRUD database operations, and SQL queries
