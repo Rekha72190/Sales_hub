@@ -1,0 +1,29 @@
+2026-09-25 11:25:13 [INFO] ==================================================
+2026-09-25 11:25:13 [INFO]       STARTING SEQUENTIAL INGESTION RUN           
+2026-09-25 11:25:13 [INFO] ==================================================
+2026-09-25 11:25:13 [INFO] \U0001f4c1 Found 4 CSV file(s). Enforced Order:
+2026-09-25 11:25:13 [INFO]    1. branches.csv
+2026-09-25 11:25:13 [INFO]    2. users.csv
+2026-09-25 11:25:13 [INFO]    3. customer_sales.csv
+2026-09-25 11:25:13 [INFO]    4. payment_splits.csv
+2026-09-25 11:25:13 [INFO] --------------------------------------------------
+2026-09-25 11:25:13 [INFO] \U0001f4c4 Processing file: branches.csv
+2026-09-25 11:25:13 [INFO]    \u2705 Branches: Processed 8 CSV rows -> 8 database rows affected.
+2026-09-25 11:25:13 [INFO] \U0001f4c4 Processing file: users.csv
+2026-09-25 11:25:13 [INFO]    \u2705 Users: Processed 9 CSV rows -> 9 database rows affected.
+2026-09-25 11:25:13 [INFO] \U0001f4c4 Processing file: customer_sales.csv
+2026-09-25 11:25:13 [INFO]    \u2705 Customer Sales: Processed 1000 CSV rows -> 1000 database rows affected.
+2026-09-25 11:25:13 [INFO] \U0001f4c4 Processing file: payment_splits.csv
+2026-09-25 11:25:15 [INFO]    \u2705 Payment Splits: Processed 2011 CSV rows -> 2011 inserted (0 skipped).
+2026-09-25 11:25:15 [INFO] 
+==================================================
+2026-09-25 11:25:15 [INFO]       \U0001f50d RUNNING POST-IMPORT CROSSCHECK AUDIT     
+2026-09-25 11:25:15 [INFO] ==================================================
+2026-09-25 11:25:16 [INFO]    • Total records in 'branches': 8
+2026-09-25 11:25:16 [INFO]    • Total records in 'users': 9
+2026-09-25 11:25:16 [INFO]    • Total records in 'customer_sales': 1000
+2026-09-25 11:25:16 [INFO]    • Total records in 'payment_splits': 2011
+2026-09-25 11:25:16 [INFO]    • Total Revenue across customer_sales: $36,768,000.00
+2026-09-25 11:25:16 [INFO]    \u2705 Referential Integrity: All sales match existing branches.
+2026-09-25 11:25:16 [INFO] 
+\U0001f389 PROCESS FINISHED SUCCESSFULLY!
